@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>金沐宠物洗护后台</title>
+  <style>
+    :root {
+      --bg: #f7f4ed;
+      --surface: #ffffff;
+      --surface-soft: #fdf8f2;
+      --ink: #1f292e;
+      --muted: #68767d;
+      --line: #e4dacc;
+      --teal: #177b7a;
+      --teal-dark: #0f6665;
+      --coral: #e86f55;
+      --gold: #d2a84a;
+      --success: #1c8b5f;
+      --danger: #bc4d3d;
+      --shadow: 0 18px 45px rgba(24, 33, 38, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(23, 123, 122, 0.08), transparent 22%),
+        radial-gradient(circle at top right, rgba(232, 111, 85, 0.08), transparent 24%),
+        var(--bg);
+      font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", Arial, sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1240px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 26px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--teal);
+      font-size: 18px;
+      box-shadow: 0 12px 24px rgba(23, 123, 122, 0.2);
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .back-link,
+    .button {
+      min-height: 42px;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 10px;
+      background: var(--teal);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .button.secondary,
+    .back-link {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .login-card,
+    .panel,
+    .detail-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .login-wrap {
+      min-height: calc(100vh - 120px);
+      display: grid;
+      place-items: center;
+    }
+
+    .login-card {
+      width: min(420px, 100%);
+      padding: 28px;
+    }
+
+    .login-card h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+    }
+
+    .login-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: #435057;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: #fbfaf7;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .hint {
+      min-height: 22px;
+      margin: 0 0 14px;
+      color: var(--danger);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .hint.success {
+      color: var(--success);
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel-head h2,
+    .detail-card h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      border-color: transparent;
+      color: #fff;
+      background: var(--teal);
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th,
+    td {
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      background: var(--surface-soft);
+      font-size: 13px;
+    }
+
+    tbody tr {
+      cursor: pointer;
+    }
+
+    tbody tr:hover,
+    tbody tr.active {
+      background: rgba(23, 123, 122, 0.06);
+    }
+
+    .status {
+      display: inline-flex;
+      min-height: 28px;
+      padding: 0 10px;
+      align-items: center;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .status.pending {
+      color: #7a5608;
+      background: rgba(210, 168, 74, 0.18);
+    }
+
+    .status.confirmed {
+      color: #0b6976;
+      background: rgba(23, 123, 122, 0.16);
+    }
+
+    .status.arrived {
+      color: #15479b;
+      background: rgba(71, 128, 255, 0.14);
+    }
+
+    .status.completed {
+      color: #17653f;
+      background: rgba(28, 139, 95, 0.14);
+    }
+
+    .status.cancelled {
+      color: #8f4035;
+      background: rgba(232, 111, 85, 0.14);
+    }
+
+    .detail-card {
+      padding: 22px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .detail-empty {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .detail-grid div,
+    .note-card {
+      padding: 14px;
+      border-radius: 12px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .detail-grid strong,
+    .note-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .loading-text {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page {
+        width: min(100% - 24px, 1240px);
+      }
+
+      .topbar {
+        display: grid;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">沐</div>
+        <div>金沐宠物洗护后台<small>预约单管理</small></div>
+      </div>
+      <div>
+        <a class="back-link" href="/">返回官网</a>
+        <button class="button" id="logout-button" hidden>退出登录</button>
+      </div>
+    </div>
+
+    <section class="screen active" id="login-screen">
+      <div class="login-wrap">
+        <div class="login-card">
+          <h1>管理员登录</h1>
+          <p id="login-copy">第一版后台使用单管理员密码登录，适合自己或店员少量协作。</p>
+          <form id="login-form">
+            <label>管理员密码
+              <input type="password" name="password" placeholder="请输入管理员密码" autocomplete="current-password">
+            </label>
+            <p class="hint" id="login-hint" aria-live="polite"></p>
+            <button class="button" type="submit" id="login-submit">进入后台</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="dashboard-screen">
+      <div class="dashboard">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>预约列表</h2>
+              <p class="loading-text" id="list-meta">正在加载预约数据...</p>
+            </div>
+            <button class="button secondary" id="refresh-button">刷新</button>
+          </div>
+          <div class="toolbar" id="filter-bar">
+            <button class="chip active" data-filter="all">全部</button>
+            <button class="chip" data-filter="pending">待确认</button>
+            <button class="chip" data-filter="confirmed">已确认</button>
+            <button class="chip" data-filter="completed">已完成</button>
+            <button class="chip" data-filter="cancelled">已取消</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>姓名</th>
+                  <th>电话</th>
+                  <th>宠物类型</th>
+                  <th>项目</th>
+                  <th>预约日期</th>
+                  <th>预约时段</th>
+                  <th>状态</th>
+                  <th>创建时间</th>
+                </tr>
+              </thead>
+              <tbody id="booking-table-body">
+                <tr>
+                  <td colspan="8" class="loading-text">正在加载预约数据...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="detail-card">
+          <h2>预约详情</h2>
+          <p class="detail-empty" id="detail-empty">点击左侧任意预约单，可以查看详情、写后台备注并切换状态。</p>
+          <div id="detail-content" hidden>
+            <div class="detail-grid">
+              <div><strong>姓名</strong><span id="detail-name"></span></div>
+              <div><strong>电话</strong><span id="detail-phone"></span></div>
+              <div><strong>宠物类型</strong><span id="detail-pet"></span></div>
+              <div><strong>预约项目</strong><span id="detail-service"></span></div>
+              <div><strong>预约日期</strong><span id="detail-date"></span></div>
+              <div><strong>预约时段</strong><span id="detail-time"></span></div>
+              <div><strong>当前状态</strong><span id="detail-status"></span></div>
+              <div><strong>创建时间</strong><span id="detail-created"></span></div>
+            </div>
+
+            <div class="note-card">
+              <strong>用户备注</strong>
+              <div id="detail-message">无</div>
+            </div>
+
+            <form id="detail-form">
+              <label>后台状态
+                <select name="status">
+                  <option value="pending">待确认</option>
+                  <option value="confirmed">已确认</option>
+                  <option value="arrived">已到店</option>
+                  <option value="completed">已完成</option>
+                  <option value="cancelled">已取消</option>
+                </select>
+              </label>
+              <label>后台备注
+                <textarea name="adminNote" placeholder="例如：已电话确认，狗狗怕吹风，安排安静时段。"></textarea>
+              </label>
+              <p class="hint" id="detail-hint" aria-live="polite"></p>
+              <div class="actions">
+                <button class="button" type="submit" id="detail-save">保存修改</button>
+              </div>
+            </form>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const statusLabels = {
+      pending: "待确认",
+      confirmed: "已确认",
+      arrived: "已到店",
+      completed: "已完成",
+      cancelled: "已取消"
+    };
+
+    const isLocalPreview = location.protocol === "file:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    const demoStorageKey = "goldenwash_demo_bookings";
+    const demoSessionKey = "goldenwash_demo_admin_session";
+    const demoPassword = "demo123";
+    const memoryStore = {};
+
+    let currentFilter = "all";
+    let bookings = [];
+    let selectedId = "";
+
+    const loginScreen = document.querySelector("#login-screen");
+    const dashboardScreen = document.querySelector("#dashboard-screen");
+    const loginForm = document.querySelector("#login-form");
+    const loginCopy = document.querySelector("#login-copy");
+    const loginHint = document.querySelector("#login-hint");
+    const loginSubmit = document.querySelector("#login-submit");
+    const logoutButton = document.querySelector("#logout-button");
+    const refreshButton = document.querySelector("#refresh-button");
+    const filterBar = document.querySelector("#filter-bar");
+    const listMeta = document.querySelector("#list-meta");
+    const tableBody = document.querySelector("#booking-table-body");
+    const detailEmpty = document.querySelector("#detail-empty");
+    const detailContent = document.querySelector("#detail-content");
+    const detailForm = document.querySelector("#detail-form");
+    const detailHint = document.querySelector("#detail-hint");
+    const detailSave = document.querySelector("#detail-save");
+
+    function safeGet(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null;
+      }
+    }
+
+    function safeSet(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch {
+        memoryStore[key] = value;
+      }
+    }
+
+    function safeRemove(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        delete memoryStore[key];
+      }
+    }
+
+    function showLogin() {
+      loginScreen.classList.add("active");
+      dashboardScreen.classList.remove("active");
+      logoutButton.hidden = true;
+      selectedId = "";
+      bookings = [];
+    }
+
+    function showDashboard() {
+      loginScreen.classList.remove("active");
+      dashboardScreen.classList.add("active");
+      logoutButton.hidden = false;
+    }
+
+    function setLoginHint(message, isSuccess) {
+      loginHint.textContent = message || "";
+      loginHint.classList.toggle("success", Boolean(isSuccess));
+    }
+
+    function setDetailHint(message, isSuccess) {
+      detailHint.textContent = message || "";
+      detailHint.classList.toggle("success", Boolean(isSuccess));
+    }
+
+    function getDemoBookings() {
+      try {
+        return JSON.parse(safeGet(demoStorageKey) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveDemoBookings(items) {
+      safeSet(demoStorageKey, JSON.stringify(items));
+    }
+
+    function getDemoSession() {
+      return safeGet(demoSessionKey) === "1";
+    }
+
+    function setDemoSession(value) {
+      if (value) {
+        safeSet(demoSessionKey, "1");
+      } else {
+        safeRemove(demoSessionKey);
+      }
+    }
+
+    function formatDateTime(value) {
+      if (!value) {
+        return "—";
+      }
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+      return date.toLocaleString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function timeLabel(value) {
+      const hour = Number(String(value || "").split(":")[0]);
+      return value + "-" + String(hour + 1).padStart(2, "0") + ":00";
+    }
+
+    function escapeHtml(text) {
+      return String(text ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderTable() {
+      if (!bookings.length) {
+        tableBody.innerHTML = '<tr><td colspan="8" class="loading-text">当前筛选条件下还没有预约单。</td></tr>';
+        renderDetail(null);
+        return;
+      }
+
+      tableBody.innerHTML = bookings.map((item) => {
+        const activeClass = item.id === selectedId ? "active" : "";
+        return `
+          <tr data-id="${item.id}" class="${activeClass}">
+            <td>${escapeHtml(item.name)}</td>
+            <td>${escapeHtml(item.phone)}</td>
+            <td>${escapeHtml(item.petType)}</td>
+            <td>${escapeHtml(item.serviceType)}</td>
+            <td>${escapeHtml(item.appointmentDate)}</td>
+            <td>${escapeHtml(item.appointmentTimeLabel)}</td>
+            <td><span class="status ${escapeHtml(item.status)}">${escapeHtml(item.statusLabel)}</span></td>
+            <td>${escapeHtml(formatDateTime(item.createdAt))}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderDetail(item) {
+      if (!item) {
+        detailEmpty.hidden = false;
+        detailContent.hidden = true;
+        setDetailHint("", false);
+        return;
+      }
+
+      detailEmpty.hidden = true;
+      detailContent.hidden = false;
+      document.querySelector("#detail-name").textContent = item.name;
+      document.querySelector("#detail-phone").textContent = item.phone;
+      document.querySelector("#detail-pet").textContent = item.petType;
+      document.querySelector("#detail-service").textContent = item.serviceType;
+      document.querySelector("#detail-date").textContent = item.appointmentDate;
+      document.querySelector("#detail-time").textContent = item.appointmentTimeLabel;
+      document.querySelector("#detail-status").innerHTML = '<span class="status ' + item.status + '">' + item.statusLabel + '</span>';
+      document.querySelector("#detail-created").textContent = formatDateTime(item.createdAt);
+      document.querySelector("#detail-message").textContent = item.message || "无";
+      detailForm.elements.status.value = item.status;
+      detailForm.elements.adminNote.value = item.adminNote || "";
+    }
+
+    async function apiRequest(url, options = {}) {
+      if (isLocalPreview) {
+        const method = options.method || "GET";
+        const requestUrl = new URL(url, "https://demo.local");
+        const pathname = requestUrl.pathname;
+
+        if (pathname === "/api/admin/login" && method === "POST") {
+          const body = JSON.parse(options.body || "{}");
+          if (String(body.password || "") !== demoPassword) {
+            throw new Error("管理员密码不正确");
+          }
+          setDemoSession(true);
+          return { loggedIn: true };
+        }
+
+        if (pathname === "/api/admin/logout" && method === "POST") {
+          setDemoSession(false);
+          return { loggedOut: true };
+        }
+
+        if (!getDemoSession()) {
+          throw new Error("未登录或登录已失效");
+        }
+
+        if (pathname === "/api/admin/bookings" && method === "GET") {
+          const status = requestUrl.searchParams.get("status") || "all";
+          let items = getDemoBookings();
+          if (status !== "all") {
+            items = items.filter((item) => item.status === status);
+          }
+          return {
+            bookings: items.map((item) => ({
+              ...item,
+              appointmentTimeLabel: timeLabel(item.appointmentTime),
+              statusLabel: statusLabels[item.status]
+            }))
+          };
+        }
+
+        if (pathname.startsWith("/api/admin/bookings/") && method === "GET") {
+          const id = decodeURIComponent(pathname.split("/").pop());
+          const item = getDemoBookings().find((booking) => booking.id === id);
+          if (!item) {
+            throw new Error("预约单不存在");
+          }
+          return {
+            booking: {
+              ...item,
+              appointmentTimeLabel: timeLabel(item.appointmentTime),
+              statusLabel: statusLabels[item.status]
+            }
+          };
+        }
+
+        if (pathname.startsWith("/api/admin/bookings/") && method === "PATCH") {
+          const id = decodeURIComponent(pathname.split("/").pop());
+          const body = JSON.parse(options.body || "{}");
+          const items = getDemoBookings();
+          const index = items.findIndex((booking) => booking.id === id);
+          if (index === -1) {
+            throw new Error("预约单不存在");
+          }
+          items[index] = {
+            ...items[index],
+            status: body.status,
+            adminNote: String(body.adminNote || "").trim(),
+            updatedAt: new Date().toISOString()
+          };
+          saveDemoBookings(items);
+          return {
+            booking: {
+              ...items[index],
+              appointmentTimeLabel: timeLabel(items[index].appointmentTime),
+              statusLabel: statusLabels[items[index].status]
+            }
+          };
+        }
+      }
+
+      const response = await fetch(url, options);
+      const payload = await response.json().catch(() => ({ ok: false, error: "服务返回异常" }));
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || "请求失败");
+      }
+      return payload.data;
+    }
+
+    async function loadBookings() {
+      listMeta.textContent = "正在加载预约数据...";
+      tableBody.innerHTML = '<tr><td colspan="8" class="loading-text">正在加载预约数据...</td></tr>';
+
+      try {
+        const query = currentFilter === "all" ? "" : "?status=" + encodeURIComponent(currentFilter);
+        const data = await apiRequest("/api/admin/bookings" + query, { credentials: "same-origin" });
+        bookings = data.bookings;
+        listMeta.textContent = "共 " + bookings.length + " 条预约";
+
+        if (!bookings.some((item) => item.id === selectedId)) {
+          selectedId = bookings[0] ? bookings[0].id : "";
+        }
+
+        renderTable();
+        renderDetail(bookings.find((item) => item.id === selectedId) || null);
+      } catch (error) {
+        if (String(error.message).includes("未登录") || String(error.message).includes("未授权")) {
+          showLogin();
+          setLoginHint("登录状态已失效，请重新输入管理员密码。", false);
+          return;
+        }
+
+        listMeta.textContent = error.message;
+        tableBody.innerHTML = '<tr><td colspan="8" class="loading-text">' + escapeHtml(error.message) + "</td></tr>";
+        renderDetail(null);
+      }
+    }
+
+    async function loadBookingDetail(id) {
+      try {
+        const data = await apiRequest("/api/admin/bookings/" + encodeURIComponent(id), { credentials: "same-origin" });
+        selectedId = data.booking.id;
+        renderTable();
+        renderDetail(data.booking);
+      } catch (error) {
+        setDetailHint(error.message, false);
+      }
+    }
+
+    async function trySession() {
+      try {
+        await apiRequest("/api/admin/bookings", { credentials: "same-origin" });
+        showDashboard();
+        await loadBookings();
+      } catch {
+        showLogin();
+      }
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setLoginHint("", false);
+      loginSubmit.disabled = true;
+      loginSubmit.textContent = "登录中...";
+
+      try {
+        await apiRequest("/api/admin/login", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            password: loginForm.elements.password.value
+          })
+        });
+        loginForm.reset();
+        showDashboard();
+        await loadBookings();
+      } catch (error) {
+        setLoginHint(error.message, false);
+      } finally {
+        loginSubmit.disabled = false;
+        loginSubmit.textContent = "进入后台";
+      }
+    });
+
+    logoutButton.addEventListener("click", async () => {
+      try {
+        if (isLocalPreview) {
+          await apiRequest("/api/admin/logout", { method: "POST" });
+        } else {
+          await fetch("/api/admin/logout", {
+            method: "POST",
+            credentials: "same-origin"
+          });
+        }
+      } finally {
+        showLogin();
+      }
+    });
+
+    refreshButton.addEventListener("click", () => {
+      loadBookings();
+    });
+
+    filterBar.addEventListener("click", (event) => {
+      const button = event.target.closest(".chip");
+      if (!button) {
+        return;
+      }
+      currentFilter = button.dataset.filter;
+      filterBar.querySelectorAll(".chip").forEach((chip) => {
+        chip.classList.toggle("active", chip === button);
+      });
+      loadBookings();
+    });
+
+    tableBody.addEventListener("click", (event) => {
+      const row = event.target.closest("tr[data-id]");
+      if (!row) {
+        return;
+      }
+      loadBookingDetail(row.dataset.id);
+    });
+
+    detailForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!selectedId) {
+        return;
+      }
+
+      setDetailHint("", false);
+      detailSave.disabled = true;
+      detailSave.textContent = "保存中...";
+
+      try {
+        const data = await apiRequest("/api/admin/bookings/" + encodeURIComponent(selectedId), {
+          method: "PATCH",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            status: detailForm.elements.status.value,
+            adminNote: detailForm.elements.adminNote.value
+          })
+        });
+
+        setDetailHint("预约单已更新。", true);
+        selectedId = data.booking.id;
+        await loadBookings();
+      } catch (error) {
+        setDetailHint(error.message, false);
+      } finally {
+        detailSave.disabled = false;
+        detailSave.textContent = "保存修改";
+      }
+    });
+
+    if (isLocalPreview) {
+      loginCopy.textContent = "当前是本地演示模式，后台密码是 demo123，预约数据保存在这台浏览器里。";
+    }
+
+    trySession();
+  </script>
+</body>
+</html>

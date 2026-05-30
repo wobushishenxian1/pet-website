@@ -1,0 +1,11 @@
+name = "goldenwash"
+compatibility_date = "2026-05-30"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "goldenwash"
+database_id = "replace-with-your-d1-database-id"
+
+# Set ADMIN_PASSWORD and SESSION_SECRET in Cloudflare Pages environment variables.
+# Do not commit production passwords or session secrets to this file.
