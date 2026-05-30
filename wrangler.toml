@@ -4,8 +4,8 @@ pages_build_output_dir = "."
 
 [[d1_databases]]
 binding = "DB"
-database_name = "goldenwash"
-database_id = "replace-with-your-d1-database-id"
+database_name = "washname"
+database_id = "0327cec4-2fbc-4898-85aa-b2fd875e8186"
 
 # Set ADMIN_PASSWORD and SESSION_SECRET in Cloudflare Pages environment variables.
 # Do not commit production passwords or session secrets to this file.
